@@ -1,5 +1,13 @@
 const axios = require('axios')
 const { expect } = require('chai')
+const Ajv = require("ajv")
+const ajv = new Ajv()
+const postUserJsonSchema = require('../jsonSchemas/POST:User_Schema.json') ;
+const getUserJsonSchema = require('../jsonSchemas/GET:User_Schema.json');
+const postPetJsonSchema = require('../jsonSchemas/POST:Pet_Schema.json') ;
+const putPetJsonSchema = require('../jsonSchemas/PUT:Pet_Schema.json') ;
+const deletePetJsonSchema = require('../jsonSchemas/DELETE:Pet_Schema.json') ;
+
 
 describe("API test suite", async () => {
     it("Verify that allows creating a User", async () => {
@@ -17,7 +25,12 @@ describe("API test suite", async () => {
             
                
             });
+            const validate = ajv.compile(postUserJsonSchema);
+            const isValidate = validate(res.data)
+
         console.log(res.data)
+        
+        expect(isValidate).to.equal(true)
         expect(res.data.code).to.equal(200);
     })
     it("Verify that allows login as a User", async () => {
@@ -26,7 +39,12 @@ describe("API test suite", async () => {
                 "username": "arsenluchka",
                 "password": "111111",
             });
+            const validate = ajv.compile(getUserJsonSchema);
+            const isValidate = validate(res.data)
+
         console.log(res.data)
+       
+        expect(isValidate).to.equal(true)
         expect(res.data.code).to.equal(200);
 
     })
@@ -67,16 +85,30 @@ describe("API test suite", async () => {
                     "userStatus": 0
                 }
             ]);
+            const validate = ajv.compile(postUserJsonSchema)
+            const isValidate = validate(res.data)
+            
         console.log(res.data)
+
+        expect(isValidate).to.equal(true);
         expect(res.data.code).to.equal(200);
         expect(res.data.message).to.equal('ok');
     })
     it("Verify that allows Log out User", async () => {
         const res = await axios.get('https://petstore.swagger.io/v2/user/logout')
 
+        
+        
+        const validate = ajv.compile(getUserJsonSchema);
+        const isValidate = validate(res.data)
+
         console.log(res.data)
+
+        expect(isValidate).to.equal(true);
+
         expect(res.data.code).to.equal(200);
-        expect(res.data.message).to.equal('ok');
+        expect(res.data.message).to.equal('ok')
+        
     })
     it("Verify that allows adding a new Pet", async () => {
         const res = await axios.post('https://petstore.swagger.io/v2/pet',
@@ -98,8 +130,12 @@ describe("API test suite", async () => {
                 ],
                 "status": "available"
             })
+            const validate = ajv.compile(postPetJsonSchema)
+            const isValidate = validate(res.data)
 
         console.log(res.data)
+
+        expect(isValidate).to.equal(true);
         expect(res.data.category.id).equal(12);
         expect(res.data.category.name).equal('Jeck');
     })
@@ -126,8 +162,12 @@ describe("API test suite", async () => {
                 ],
                 "status": "available"
             })
+            const validate = ajv.compile(putPetJsonSchema)
+            const isValidate = validate(res.data)
 
         console.log(res.data)
+
+        expect(isValidate).to.equal(true)
         expect(res.data.category.id).equal(12);
         expect(res.data.category.name).equal('Jeck');
     })
@@ -153,8 +193,14 @@ describe("API test suite", async () => {
                 ],
                 "status": "pending"
             })
+            const validate = ajv.compile(putPetJsonSchema)
+            const isValidate = validate(res.data)
 
         console.log(res.data)
+
+        expect(isValidate).to.equal(true)
+
+        
         expect(res.data.category.id).equal(12);
         expect(res.data.category.name).equal('Jecky')
         expect(res.data.status).equal('pending');
@@ -167,7 +213,12 @@ describe("API test suite", async () => {
                 api_key:'special-key'
             }
         })
+        const validate = ajv.compile(deletePetJsonSchema)
+            const isValidate = validate(res.data)
+
         console.log(res.data)
+
+        expect(isValidate).to.equal(true)
         expect(res.data.code).to.equal(200);
     })
   })
